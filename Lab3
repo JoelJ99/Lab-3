@@ -1,113 +1,73 @@
  #include <stdio.h>
+#include <stdlib.h> /* for malloc() and exit() function */
 
-int main()
+int main(int argc, char* argv[])
 {
-   int i, x;
-   char str[100];
+    FILE *FP;
+    int i, n; /*  the counter and num of floating point numbers */
+    float* val; /* pointer for storing the floating point values */
+    if(argc<2)
+    {
+        printf( "test.txt", argv[0] );
+        exit(-1);
+    }
+    if((FP = fopen( argv[1], "rb" )) ==NULL)
+    {
+        printf( "Could not open file.\n" );
+        exit(-2);
+    }
+    if(fread(&n, sizeof(int), 1, FP)!=1)
+    {
+        printf( "Could not read data from file.\n" );
+        exit(-3);
+    };
 
-   printf("\nPlease enter a string:\t");
-   gets(str);
+    if((val = malloc(n*sizeof(float)))==NULL)
+    {
+        printf( "Could not allocate memory for data.\n" );
+        exit(-4);
+    };
+    printf("Number of data values: %d\n", n);
+    if(fread(val, sizeof(float), n, FP)!=n) /* read each floating point value one by one */
+    {
+        printf( "Could not read data from file.\n" );
+        exit(-5);
+    }
+    for(i=0; i<n; ++i)
+    {
+        printf("%f \t", val[i]); /* now print it */
+    }
+    free(val); /* free the allocated memory */
+    fclose(FP); /* close the file */
 
-   printf("\nPlease choose following options:\n");
-   printf("1 = Encrypt the string.\n");
-   printf("2 = Decrypt the string.\n");
-   scanf("%d", &x);
 
-   //using switch case statements
-   switch(x)
-   {
-   case 1:
-      for(i = 0; (i < 100 && str[i] != '\0'); i++)
-        str[i] = str[i] + 3; //the key for encryption is 3 that is added to ASCII value
+    int main(void)
+{
+    unsigned char c;
+    FILE *fp;
 
-      printf("\nEncrypted string: %s\n", str);
-      break;
+    /* open a file to write */
+    fp = fopen("test_file", "rb");
+    if (fp == NULL) {
+             printf("Open Error\n");
+             return 1;
+    }
 
-   case 2:
-      for(i = 0; (i < 100 && str[i] != '\0'); i++)
-        str[i] = str[i] - 3; //the key for encryption is 3 that is subtracted to ASCII value
+    /* write some data to file  */
+    for (c=0; c < 200; c++)
+            fputc(c, fp);
 
-      printf("\nDecrypted string: %s\n", str);
-      break;
+    /* close file */
+    fclose(fp);
 
-   default:
-      printf("\nError\n");
-   }
-   return 0;
+
+
+
+    return 0;
 }
 
-
-//write test file
-
-struct rec
-{
-char mydata;
-};
-
-int write_file()
-{
-int i;
-int counter;
-FILE *FP;
-struct rec my_record;
-
-FP=fopen("test.txt","rb");
-if (!FP)
-{
-printf("Unable to open file!");
-return 1;
-}
-i = 0;
-
-for ( counter=0; counter < 10; counter++)
-{
-my_record.mydata= i;
-fseek ( FP , counter , SEEK_END );
-fwrite(&my_record, sizeof(struct rec), 1, FP);
-i++;
-}
-
-fclose(FP);
-
-return 0;
 }
 
 
 
-//Read  file
 
-
-
-int read_file()
-{
-int counter;
-FILE *FP;
-struct rec my_record;
-
-FP=fopen("test.txt","rb");
-if (!FP)
-{
-printf("Unable to open file!");
-return 1;
-}
-for ( counter=1; counter <= 10; counter++)
-{
-fread(&my_record,sizeof(struct rec),1,FP);
-printf("%d\n",my_record.mydata);
-}
-
-if (FP == NULL) {
-} else {
-
-    free(FP);
-    FP = NULL;
-
-{
-fprintf(stderr,"Insufficient memory");
-exit("EXIT_FAILURE");
-}
-void rewind( FILE *FP );
-fclose(FP);
-return 0;
-}
-}
